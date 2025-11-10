@@ -1,4 +1,4 @@
-// Utility for fetch requests
+// Utility for fetch requests with exponential backoff
 export const fetchWithTimeout = async (
 	url: string,
 	options: RequestInit, // eslint-disable-line no-undef
@@ -14,8 +14,9 @@ export const fetchWithTimeout = async (
 				throw error;
 			}
 
-			// Wait 1 second before retrying
-			await new Promise(resolve => setTimeout(resolve, 1000)); // eslint-disable-line no-undef
+			// Exponential backoff: 1s, 2s, 4s, 8s, etc.
+			const delayMs = Math.pow(2, attempt) * 1000;
+			await new Promise(resolve => setTimeout(resolve, delayMs)); // eslint-disable-line no-undef
 		}
 	}
 
