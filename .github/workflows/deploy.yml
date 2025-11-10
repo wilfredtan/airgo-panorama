@@ -20,6 +20,11 @@ concurrency:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
 
     steps:
       - name: Checkout code

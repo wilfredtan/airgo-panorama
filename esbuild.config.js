@@ -23,9 +23,11 @@ const config = {
 if (isProduction) {
   config.minify = true;
   config.sourcemap = false;
+  config.define['process.env.REACT_APP_API_BASE_URL'] = JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'https://your-api-url.com'); // eslint-disable-line no-undef
 } else {
   // Development-specific options
   config.sourcemap = true;
+  config.define['process.env.REACT_APP_API_BASE_URL'] = JSON.stringify('http://localhost:3000');
 }
 
 export default config;

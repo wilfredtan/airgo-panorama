@@ -6,7 +6,7 @@
   "copyright": "Airsquire",
   "scripts": {
     "start": "cp public/index.html build/ && NODE_ENV=development esbuild src/index.tsx --bundle --outdir=build --serve=3000 --servedir=build --loader:.png=file --loader:.jpg=file --loader:.jpeg=file --loader:.gif=file --loader:.svg=file --loader:.woff=file --loader:.woff2=file --define:process.env.NODE_ENV='\"development\"' --watch",
-    "build": "rimraf ./build && NODE_ENV=production node build.js && cp public/index.html build/",
+    "build": "rimraf ./build && REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL node build.js && cp public/index.html build/",
     "lint": "eslint ./src/**/*.ts ./src/**/*.tsx"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.0",
     "@types/react-dom": "^19.2.2",
     "@types/styled-components": "^5.1.35",
     "@types/three": "^0.181.0",
