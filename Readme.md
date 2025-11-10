@@ -14,11 +14,11 @@
 Local development
 
 ```bash
-yarn install && yarn start
+npx yarn install && npx yarn start
 ```
 
 Production build
 
 ```bash
-yarn install && yarn build
+npx yarn install && npx yarn build
 ```

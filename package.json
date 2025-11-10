@@ -2,36 +2,33 @@
   "name": "frontend-boilerplate",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "copyright": "Airsquire",
   "scripts": {
-    "start": "webpack serve --config ./webpack/webpack.dev.js --progress --profile",
-    "build": "rimraf ./build && mkdir ./build && webpack --profile --progress --config ./webpack/webpack.prod.js"
+    "start": "cp public/index.html build/ && NODE_ENV=development esbuild src/index.tsx --bundle --outdir=build --serve=3000 --servedir=build --loader:.png=file --loader:.jpg=file --loader:.jpeg=file --loader:.gif=file --loader:.svg=file --loader:.woff=file --loader:.woff2=file --define:process.env.NODE_ENV='\"development\"' --watch",
+    "build": "rimraf ./build && NODE_ENV=production node build.js && cp public/index.html build/",
+    "lint": "eslint ./src/**/*.ts ./src/**/*.tsx"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "styled-components": "^6.1.19"
+    "@react-three/fiber": "^9.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.3.0",
+    "styled-components": "^6.1.19",
+    "three": "^0.181.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/react-dom": "^17.0.3",
+    "@eslint/js": "^9.39.1",
+    "@types/react-dom": "^19.2.2",
     "@types/styled-components": "^5.1.35",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
-    "css-loader": "^7.1.2",
-    "eslint": "^8.57.0",
+    "@types/three": "^0.181.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
+    "@typescript-eslint/parser": "^8.46.3",
+    "esbuild": "^0.25.12",
+    "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.35.2",
-    "eslint-webpack-plugin": "^4.2.0",
-    "html-webpack-plugin": "^5.6.0",
-    "path": "^0.12.7",
-    "style-loader": "^4.0.0",
-    "terser-webpack-plugin": "^5.3.10",
-    "ts-loader": "^9.5.1",
-    "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^5.6.3",
-    "webpack": "5.76.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.2",
-    "webpack-merge": "^5.10.0"
-  },
-  "packageManager": "yarn@1.22.22"
+    "rimraf": "^6.1.0",
+    "typescript": "^5.6.3"
+  }
 }

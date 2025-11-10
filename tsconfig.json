@@ -15,7 +15,8 @@
     "jsx": "react",
     "baseUrl": "./src/",
     "outDir": "./build/",
-    "sourceMap": true
+    "sourceMap": true,
+    "types": []
   },
   "include": ["src"]
 }
