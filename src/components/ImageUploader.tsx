@@ -129,7 +129,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
           const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/upload`, {
             method: 'POST',
             body: formData,
-          }, 10000, 0); // No retry for file uploads
+          });
 
           if (response.ok) {
             onImageUpload();

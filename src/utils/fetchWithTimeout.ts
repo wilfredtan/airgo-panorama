@@ -1,4 +1,4 @@
-// Retry utility for fetch requests
+// Utility for fetch requests
 export const fetchWithTimeout = async (
 	url: string,
 	options: RequestInit, // eslint-disable-line no-undef

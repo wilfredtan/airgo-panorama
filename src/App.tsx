@@ -130,7 +130,7 @@ const AppContent: React.FC = () => {
 						limit: 10,
 					},
 				}),
-			}, 10000, 1); // 1 retry with 1 second delay
+			});
 			const result = await response.json();
 			if (result.data && result.data.images) {
 				const imageConnection = result.data.images;
@@ -187,7 +187,7 @@ const AppContent: React.FC = () => {
 				body: JSON.stringify({
 					query,
 				}),
-			}, 10000, 1); // 1 retry with 1 second delay
+			});
 			const result = await response.json();
 			if (result.data?.analytics) {
 				setAnalytics(result.data.analytics);
@@ -284,7 +284,7 @@ const AppContent: React.FC = () => {
 					query: mutation,
 					variables: { id, bookmarked: newBookmarkedState },
 				}),
-			}, 10000, 1); // 1 retry with 1 second delay
+			});
 
 			if (response.ok) {
 				const result = await response.json();
@@ -326,7 +326,7 @@ const AppContent: React.FC = () => {
 					query: mutation,
 					variables: { id },
 				}),
-			}, 10000, 1); // 1 retry with 1 second delay
+			});
 
 			if (response.ok) {
 				const result = await response.json();
