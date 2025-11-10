@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
-/* global FormData, fetch */
+/* global FormData */
 
 const UploadContainer = styled.div`
   border: 2px dashed #ccc;
@@ -125,10 +126,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
         formData.append('image', file);
 
         try {
-          const response = await fetch(`${API_BASE_URL}/api/images/upload`, {
+          const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/upload`, {
             method: 'POST',
             body: formData,
-          });
+          }, 10000, 0); // No retry for file uploads
 
           if (response.ok) {
             onImageUpload();

@@ -8,8 +8,7 @@ import FilterBar from './components/FilterBar';
 import AnalyticsCharts from './components/AnalyticsCharts';
 import PanoramaViewer from './components/PanoramaViewer';
 import { API_BASE_URL } from './config';
-
-/* global fetch */
+import { fetchWithTimeout } from './utils/fetchWithTimeout';
 
 const AppContainer = styled.div`
   max-width: 1200px;
@@ -117,7 +116,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetch(`${API_BASE_URL}/graphql`, {
+			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -131,7 +130,7 @@ const AppContent: React.FC = () => {
 						limit: 10,
 					},
 				}),
-			});
+			}, 10000, 1); // 1 retry with 1 second delay
 			const result = await response.json();
 			if (result.data && result.data.images) {
 				const imageConnection = result.data.images;
@@ -180,7 +179,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetch(`${API_BASE_URL}/graphql`, {
+			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -188,7 +187,7 @@ const AppContent: React.FC = () => {
 				body: JSON.stringify({
 					query,
 				}),
-			});
+			}, 10000, 1); // 1 retry with 1 second delay
 			const result = await response.json();
 			if (result.data?.analytics) {
 				setAnalytics(result.data.analytics);
@@ -276,7 +275,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetch(`${API_BASE_URL}/graphql`, {
+			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -285,7 +284,7 @@ const AppContent: React.FC = () => {
 					query: mutation,
 					variables: { id, bookmarked: newBookmarkedState },
 				}),
-			});
+			}, 10000, 1); // 1 retry with 1 second delay
 
 			if (response.ok) {
 				const result = await response.json();
@@ -318,7 +317,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetch(`${API_BASE_URL}/graphql`, {
+			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -327,7 +326,7 @@ const AppContent: React.FC = () => {
 					query: mutation,
 					variables: { id },
 				}),
-			});
+			}, 10000, 1); // 1 retry with 1 second delay
 
 			if (response.ok) {
 				const result = await response.json();
