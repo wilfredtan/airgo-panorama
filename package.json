@@ -5,7 +5,7 @@
   "type": "module",
   "copyright": "Airsquire",
   "scripts": {
-    "start": "cp public/index.html build/ && . .env && NODE_ENV=development esbuild src/index.tsx --bundle --outdir=build --serve=3000 --servedir=build --loader:.png=file --loader:.jpg=file --loader:.jpeg=file --loader:.gif=file --loader:.svg=file --loader:.woff=file --loader:.woff2=file --define:process.env.NODE_ENV='\"development\"' --define:process.env.REACT_APP_API_BASE_URL='\"$REACT_APP_API_BASE_URL\"' --watch",
+    "start": "cp public/index.html build/ && export $(cat .env | xargs) && NODE_ENV=development esbuild src/index.tsx --bundle --outdir=build --serve=3000 --servedir=build --loader:.png=file --loader:.jpg=file --loader:.jpeg=file --loader:.gif=file --loader:.svg=file --loader:.woff=file --loader:.woff2=file --define:process.env.NODE_ENV='\"development\"' --define:process.env.REACT_APP_API_BASE_URL='\"'$REACT_APP_API_BASE_URL'\"' --watch",
     "build": "rimraf ./build && node build.js \"$REACT_APP_API_BASE_URL\" && cp public/index.html build/",
     "lint": "eslint ./src/**/*.ts ./src/**/*.tsx"
   },
