@@ -147,11 +147,20 @@ const ImageTable: React.FC<ImageTableProps> = ({
           {images.map(image => (
             <tr key={image.id}>
               <Td>
-                <ImagePreview
-                  src={image.url}
-                  alt={image.name}
-                  onClick={() => onViewPanorama(image)}
-                />
+                {image.url ? (
+                  <ImagePreview
+                    src={image.url}
+                    alt={image.name}
+                    onClick={() => onViewPanorama(image)}
+                  />
+                ) : (
+                  <ImagePreview
+                    as="div"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0', color: '#666', fontSize: '12px' }}
+                  >
+                    No Preview
+                  </ImagePreview>
+                )}
               </Td>
               <Td>{image.name}</Td>
               <Td>{formatFileSize(image.size)}</Td>

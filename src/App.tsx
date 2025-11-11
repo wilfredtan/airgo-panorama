@@ -112,6 +112,7 @@ const AppContent: React.FC = () => {
 							fileType
 							createdAt
 							bookmarked
+							thumbnailUrl
 							previewUrl
 						}
 						total
@@ -148,19 +149,22 @@ const AppContent: React.FC = () => {
 					height: number;
 					fileType: string;
 					bookmarked: boolean;
+					thumbnailUrl: string;
 					previewUrl: string;
 				}) => {
 					const uploadDate = new Date(img.createdAt);
 					return {
 						id: img.id,
 						name: img.name,
-						url: img.previewUrl, // Use server-provided preview URL
+						url: img.thumbnailUrl || '', // Use thumbnail for table display
 						size: img.size,
 						uploadDate: isNaN(uploadDate.getTime()) ? new Date(NaN) : uploadDate,
 						bookmarked: img.bookmarked || false,
 						width: img.width,
 						height: img.height,
-						fileType: img.fileType
+						fileType: img.fileType,
+						thumbnailUrl: img.thumbnailUrl,
+						previewUrl: img.previewUrl
 					};
 				});
 				setImages(parsedImages);
@@ -392,7 +396,7 @@ const AppContent: React.FC = () => {
 	};
 
 	const viewPanorama = (image: PanoramaImage) => {
-		setViewingImage(image);
+		setViewingImage({ ...image, url: image.previewUrl || image.url });
 	};
 
 	const handleNext = () => {

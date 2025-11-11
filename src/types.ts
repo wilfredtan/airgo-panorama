@@ -8,6 +8,8 @@ export interface PanoramaImage {
   width?: number;
   height?: number;
   fileType: string;
+  thumbnailUrl?: string;
+  previewUrl?: string;
 }
 
 export interface StoredPanoramaImage {
