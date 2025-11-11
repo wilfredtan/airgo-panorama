@@ -2,7 +2,7 @@
 export const fetchWithTimeout = async (
 	url: string,
 	options: RequestInit, // eslint-disable-line no-undef
-	retryCount: number = 3
+	retryCount: number = 2
 ): Promise<Response> => { // eslint-disable-line no-undef
 	for (let attempt = 0; attempt <= retryCount; attempt++) {
 		console.log(`[${url}] Attempt ${attempt + 1} of ${retryCount + 1}`);
