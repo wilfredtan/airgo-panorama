@@ -10,6 +10,8 @@ import PanoramaViewer from './components/PanoramaViewer';
 import { API_BASE_URL } from './config';
 import { queuedFetch } from './utils/apiQueue';
 
+/* global fetch */
+
 const AppContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -150,7 +152,7 @@ const AppContent: React.FC = () => {
 					return {
 						id: img.id,
 						name: img.name,
-						url: `${API_BASE_URL}/api/images/${img.id}/download`,
+						url: `${API_BASE_URL}/api/images/local-download/${img.id}`, // Use local download endpoint for viewing
 						size: img.size,
 						uploadDate: isNaN(uploadDate.getTime()) ? new Date(NaN) : uploadDate,
 						bookmarked: img.bookmarked || false,
@@ -351,13 +353,40 @@ const AppContent: React.FC = () => {
 		}
 	};
 
-	const downloadImage = (image: PanoramaImage) => {
-		const link = document.createElement('a');
-		link.href = image.url;
-		link.download = image.name;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+	const downloadImage = async (image: PanoramaImage) => {
+		try {
+			// First, get the download URL from the API using direct fetch
+			const response = await fetch(`${API_BASE_URL}/api/images/${image.id}/download`);
+			if (!response.ok) {
+				throw new Error('Failed to get download URL');
+			}
+
+			const data = await response.json();
+
+			// Create download link and trigger download
+			const link = document.createElement('a');
+			link.href = data.downloadUrl;
+			link.download = data.fileName || image.name;
+			link.style.display = 'none';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} catch (error) {
+			console.error('Download failed:', error);
+			// Fallback: image.url already points to the local download endpoint
+			try {
+				const link = document.createElement('a');
+				link.href = image.url; // This now points to local-download endpoint
+				link.download = image.name;
+				link.style.display = 'none';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			} catch (fallbackError) {
+				console.error('Fallback download also failed:', fallbackError);
+				alert('Download failed. Please try again later.');
+			}
+		}
 	};
 
 	const viewPanorama = (image: PanoramaImage) => {
