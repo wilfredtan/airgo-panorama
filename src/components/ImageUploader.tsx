@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
-import { fetchWithTimeout } from '../utils/fetchWithTimeout';
+import { queuedFetch } from '../utils/apiQueue';
 
 /* global FormData */
 
@@ -126,7 +126,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
         formData.append('image', file);
 
         try {
-          const response = await fetchWithTimeout(`${API_BASE_URL}/api/images/upload`, {
+          const response = await queuedFetch(`${API_BASE_URL}/api/images/upload`, {
             method: 'POST',
             body: formData,
           });

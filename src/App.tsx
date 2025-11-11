@@ -8,7 +8,7 @@ import FilterBar from './components/FilterBar';
 import AnalyticsCharts from './components/AnalyticsCharts';
 import PanoramaViewer from './components/PanoramaViewer';
 import { API_BASE_URL } from './config';
-import { fetchWithTimeout } from './utils/fetchWithTimeout';
+import { queuedFetch } from './utils/apiQueue';
 
 const AppContainer = styled.div`
   max-width: 1200px;
@@ -116,7 +116,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
+			const response = await queuedFetch(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
+			const response = await queuedFetch(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
+			const response = await queuedFetch(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -317,7 +317,7 @@ const AppContent: React.FC = () => {
 					}
 				}
 			`;
-			const response = await fetchWithTimeout(`${API_BASE_URL}/graphql`, {
+			const response = await queuedFetch(`${API_BASE_URL}/graphql`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
