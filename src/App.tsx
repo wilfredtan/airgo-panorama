@@ -92,9 +92,11 @@ const AppContent: React.FC = () => {
 	const [currentView, setCurrentView] = useState<'images' | 'analytics'>('images');
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
+	const [loadingImages, setLoadingImages] = useState(false);
 
 	// Shared function to fetch images from GraphQL
 	const fetchImages = async (search?: string, filter?: string, page: number = 1) => {
+		setLoadingImages(true);
 		try {
 			const query = `
 				query GetImages($search: String, $bookmarkFilter: String, $page: Int, $limit: Int) {
@@ -162,6 +164,8 @@ const AppContent: React.FC = () => {
 			}
 		} catch (error) {
 			console.warn('Failed to load images from GraphQL:', error);
+		} finally {
+			setLoadingImages(false);
 		}
 	};
 
@@ -415,6 +419,7 @@ const AppContent: React.FC = () => {
 						totalPages={totalPages}
 						onNext={handleNext}
 						onBack={handleBack}
+						loading={loadingImages}
 					/>
 				</>
 			) : (
@@ -444,7 +449,7 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-		<AppContent />
+	<AppContent />
 );
 
 export default App;

@@ -64,6 +64,31 @@ const BookmarkButton = styled.button<{ $bookmarked: boolean }>`
   }
 `;
 
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #666;
+
+  &::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 interface ImageTableProps {
   images: PanoramaImage[];
   onToggleBookmark: (id: string) => void;
@@ -75,6 +100,7 @@ interface ImageTableProps {
   totalPages: number;
   onNext: () => void;
   onBack: () => void;
+  loading: boolean;
 }
 
 const ImageTable: React.FC<ImageTableProps> = ({
@@ -87,7 +113,8 @@ const ImageTable: React.FC<ImageTableProps> = ({
   currentPage,
   totalPages,
   onNext,
-  onBack
+  onBack,
+  loading
 }) => {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -151,6 +178,7 @@ const ImageTable: React.FC<ImageTableProps> = ({
           ))}
         </tbody>
       </Table>
+      {loading && <LoadingSpinner>Loading images...</LoadingSpinner>}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
         {currentPage > 1 && (
           <ActionButton onClick={onBack}>
