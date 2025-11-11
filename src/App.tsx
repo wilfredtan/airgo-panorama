@@ -112,6 +112,7 @@ const AppContent: React.FC = () => {
 							fileType
 							createdAt
 							bookmarked
+							previewUrl
 						}
 						total
 						page
@@ -147,12 +148,13 @@ const AppContent: React.FC = () => {
 					height: number;
 					fileType: string;
 					bookmarked: boolean;
+					previewUrl: string;
 				}) => {
 					const uploadDate = new Date(img.createdAt);
 					return {
 						id: img.id,
 						name: img.name,
-						url: `${API_BASE_URL}/api/images/local-download/${img.id}`, // Use local download endpoint for viewing
+						url: img.previewUrl, // Use server-provided preview URL
 						size: img.size,
 						uploadDate: isNaN(uploadDate.getTime()) ? new Date(NaN) : uploadDate,
 						bookmarked: img.bookmarked || false,
