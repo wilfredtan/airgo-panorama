@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { API_BASE_URL } from '../config';
 import { queuedFetch } from '../utils/apiQueue';
 
-/* global FormData */
+/* global FormData, File, fetch */
 
 const UploadContainer = styled.div`
   border: 2px dashed #ccc;
@@ -101,6 +101,86 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Get presigned URL from backend
+  const getPresignedUrl = async (fileName: string, fileType: string, fileSize: number) => {
+    const response = await queuedFetch(`${API_BASE_URL}/api/images/presigned-url`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fileName,
+        fileType,
+        fileSize,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get upload URL');
+    }
+
+    return response.json();
+  };
+
+  // Upload file - either to S3 via presigned URL or to local API
+  const uploadFile = async (presignedUrl: string, file: File, isLocal: boolean) => {
+    if (isLocal) {
+      // For local development, upload to the local API endpoint
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('originalName', file.name);
+      formData.append('size', file.size.toString());
+      formData.append('type', file.type);
+
+      const response = await fetch(`${API_BASE_URL}${presignedUrl}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload to local API');
+      }
+
+      return await response.json();
+    } else {
+      // For cloud deployment, upload directly to S3 using presigned URL
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload to S3');
+      }
+
+      return { success: true };
+    }
+  };
+
+  // Notify backend that upload is complete (for cloud deployments)
+  const completeUpload = async (key: string, bucket: string, originalFile: File) => {
+    const response = await queuedFetch(`${API_BASE_URL}/api/images/complete-upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        key,
+        bucket,
+        originalName: originalFile.name,
+        size: originalFile.size,
+        type: originalFile.type,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to complete upload');
+    }
+  };
+
   const handleFileSelect = () => {
     fileInputRef.current?.click();
   };
@@ -122,23 +202,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
 
     for (const file of Array.from(files)) {
       if (file.type.startsWith('image/')) {
-        const formData = new FormData();
-        formData.append('image', file);
-
         try {
-          const response = await queuedFetch(`${API_BASE_URL}/api/images/upload`, {
-            method: 'POST',
-            body: formData,
-          });
+          // Use presigned URL upload for all files
+          const { presignedUrl, key, bucket, isLocal } = await getPresignedUrl(file.name, file.type, file.size);
 
-          if (response.ok) {
-            onImageUpload();
+          if (isLocal) {
+            // For local uploads, the uploadFile function handles everything including database storage
+            await uploadFile(presignedUrl, file, true);
           } else {
-            const errorData = await response.json();
-            setErrorMessage(`Upload failed for "${file.name}": ${errorData.error}`);
+            // For cloud uploads, upload to S3 first, then complete the upload
+            await uploadFile(presignedUrl, file, false);
+            await completeUpload(key, bucket, file);
           }
-        } catch {
-          setErrorMessage(`Upload failed for "${file.name}": Network error`);
+
+          onImageUpload();
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : 'Upload failed';
+          setErrorMessage(`Upload failed for "${file.name}": ${errorMsg}`);
         }
       }
       checkComplete();
