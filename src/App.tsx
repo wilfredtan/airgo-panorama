@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+
+/* global setTimeout, clearTimeout */
 import { PanoramaImage, StoredPanoramaImage, BookmarkFilter, AnalyticsData } from './types';
 import ImageUploader from './components/ImageUploader';
 import ImageTable from './components/ImageTable';
@@ -86,6 +88,7 @@ const NavButton = styled.button<{ $active: boolean }>`
 const AppContent: React.FC = () => {
 	const [images, setImages] = useState<PanoramaImage[]>([]);
 	const [searchTerm, setSearchTerm] = useState('');
+	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 	const [bookmarkFilter, setBookmarkFilter] = useState<BookmarkFilter>('all');
 	const [viewingImage, setViewingImage] = useState<PanoramaImage | null>(null);
 	const [deleteModal, setDeleteModal] = useState<string | null>(null);
@@ -130,7 +133,7 @@ const AppContent: React.FC = () => {
 				body: JSON.stringify({
 					query,
 					variables: {
-						search: search || searchTerm,
+						search: search || debouncedSearchTerm,
 						bookmarkFilter: filter || (bookmarkFilter === 'all' ? undefined : bookmarkFilter),
 						page,
 						limit: 10,
@@ -211,14 +214,24 @@ const AppContent: React.FC = () => {
 
 	// Load analytics on mount
 	useEffect(() => {
-		fetchAnalytics();
-	}, []);
+		if (currentView === 'analytics') {
+			fetchAnalytics();
+		}
+	}, [currentView]);
+
+	// Debounce search term
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearchTerm(searchTerm);
+		}, 2000);
+		return () => clearTimeout(timer);
+	}, [searchTerm]);
 
 	// Load images from GraphQL on mount and when search/filter changes
 	useEffect(() => {
 		setCurrentPage(1);
-		fetchImages(searchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, 1);
-	}, [searchTerm, bookmarkFilter]);
+		fetchImages(debouncedSearchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, 1);
+	}, [debouncedSearchTerm, bookmarkFilter]);
 
 	// Save images to localStorage whenever images change (only metadata for large images)
 	useEffect(() => {
@@ -403,7 +416,7 @@ const AppContent: React.FC = () => {
 		if (currentPage < totalPages) {
 			const nextPage = currentPage + 1;
 			setCurrentPage(nextPage);
-			fetchImages(searchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, nextPage);
+			fetchImages(debouncedSearchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, nextPage);
 		}
 	};
 
@@ -411,7 +424,7 @@ const AppContent: React.FC = () => {
 		if (currentPage > 1) {
 			const prevPage = currentPage - 1;
 			setCurrentPage(prevPage);
-			fetchImages(searchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, prevPage);
+			fetchImages(debouncedSearchTerm, bookmarkFilter === 'all' ? undefined : bookmarkFilter, prevPage);
 		}
 	};
 
